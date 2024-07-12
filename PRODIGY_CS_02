@@ -1,0 +1,78 @@
+from PIL import Image
+import os
+
+def encrypt_image(image_path, key):
+    try:
+        image = Image.open(image_path)
+        width, height = image.size
+        encrypted_image = Image.new("RGB", (width, height))
+
+        pixels_original = image.load()
+        pixels_encrypted = encrypted_image.load()
+
+        for i in range(width):
+            for j in range(height):
+                r, g, b = pixels_original[i, j]
+                # Example encryption: XOR with key
+                r_encrypted = r ^ key
+                g_encrypted = g ^ key
+                b_encrypted = b ^ key
+                pixels_encrypted[i, j] = (r_encrypted, g_encrypted, b_encrypted)
+
+        encrypted_image.save("encrypted_image.png")
+        print("Image encrypted successfully as 'encrypted_image.png'.")
+    except Exception as e:
+        print(f"Error encrypting image: {e}")
+
+def decrypt_image(encrypted_image_path, key):
+    try:
+        encrypted_image = Image.open(encrypted_image_path)
+        width, height = encrypted_image.size
+        decrypted_image = Image.new("RGB", (width, height))
+
+        pixels_encrypted = encrypted_image.load()
+        pixels_decrypted = decrypted_image.load()
+
+        for i in range(width):
+            for j in range(height):
+                r_encrypted, g_encrypted, b_encrypted = pixels_encrypted[i, j]
+                # Example decryption: XOR with key
+                r_decrypted = r_encrypted ^ key
+                g_decrypted = g_encrypted ^ key
+                b_decrypted = b_encrypted ^ key
+                pixels_decrypted[i, j] = (r_decrypted, g_decrypted, b_decrypted)
+
+        decrypted_image.save("decrypted_image.png")
+        print("Image decrypted successfully as 'decrypted_image.png'.")
+    except Exception as e:
+        print(f"Error decrypting image: {e}")
+
+def main():
+    print("Image Encryption and Decryption Tool")
+    print("-----------------------------------")
+    while True:
+        try:
+            choice = int(input("Enter 1 to Encrypt Image, 2 to Decrypt Image, 0 to Exit: "))
+            if choice == 0:
+                break
+            elif choice == 1:
+                image_path = input("Enter the path to the image file to encrypt: ")
+                if not os.path.isfile(image_path):
+                    print("Error: File not found.")
+                    continue
+                key = int(input("Enter the encryption key (an integer): "))
+                encrypt_image(image_path, key)
+            elif choice == 2:
+                encrypted_image_path = input("Enter the path to the encrypted image file to decrypt: ")
+                if not os.path.isfile(encrypted_image_path):
+                    print("Error: File not found.")
+                    continue
+                key = int(input("Enter the decryption key (the same integer used for encryption): "))
+                decrypt_image(encrypted_image_path, key)
+            else:
+                print("Invalid choice. Please enter 1, 2, or 0.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
+if _name_ == "_main_":
+    main()
